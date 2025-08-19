@@ -36,17 +36,16 @@ export const FilterCarousel = ({
     useEffect(() => {
         if (!api) return;
 
-        const updateCurrent = () => setCurrent(api.selectedScrollSnap() + 1);
-
         setCount(api.scrollSnapList().length);
-        updateCurrent();
+        setCurrent(api.selectedScrollSnap() + 1);
 
-        api.on("select", updateCurrent);
-        return () => api.off("select", updateCurrent);
+        api.on("select", () => {
+            setCurrent(api.selectedScrollSnap() + 1);
+        });
     }, [api]);
 
     return (
-        <div className="relative w-full px-2">
+        <div className="relative w-full px-2 ">
             {/* Left Fade */}
             <div
                 className={cn(
@@ -72,6 +71,7 @@ export const FilterCarousel = ({
                             <Badge
                                 variant={value === null ? "default" : "secondary"}
                                 className="rounded-lg px-3 py-1 cursor-pointer whitespace-nowrap text-sm"
+                                onClick={() => onSelect?.(null)}
                             >
                                 All
                             </Badge>
@@ -80,23 +80,20 @@ export const FilterCarousel = ({
 
                     {isLoading &&
                         Array.from({ length: 14 }).map((_, index) => (
-                            <CarouselItem key={index} className="pl-3 basis-auto">
-                                <Skeleton className="rounded-lg px-3 py-1 h-full text-sm w-[100px] font-semibold">
+                            <CarouselItem key={index} className=" pl-3 basis-auto" >
+                                <Skeleton className="rounded-lg px-3 py-1
+                     h-full text-sm w-[100px] font-semibold">
                                     &nbsp;
                                 </Skeleton>
                             </CarouselItem>
                         ))}
-
                     {!isLoading &&
                         data.map((item) => (
-                            <CarouselItem
-                                key={item.value}
-                                className="pl-3 basis-auto"
-                                onClick={() => onSelect?.(item.value)}
-                            >
+                            <CarouselItem key={item.value} className="pl-3 basis-auto" onClick={() => onSelect?.(item.value)}>
                                 <Badge
                                     variant={value === item.value ? "default" : "secondary"}
                                     className="rounded-lg px-3 py-1 cursor-pointer whitespace-nowrap text-sm"
+                                    onClick={() => onSelect?.(item.value)}
                                 >
                                     {item.label}
                                 </Badge>
